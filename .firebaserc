@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "control-clientes-8b30d": {
+      "hosting": {
+        "control-cliente": [
+          "control-clientes-8b30d"
+        ]
+      }
+    }
+  }
+}
