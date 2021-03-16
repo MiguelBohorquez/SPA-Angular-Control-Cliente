@@ -3,6 +3,6 @@ export class Cliente {
     nombre?: string;
     apellido?: string;
     email?:string;
-    saldo?:string;
+    saldo?:number;
 
 }

@@ -1,15 +1,67 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {ClienteServicio} from '../service/cliente.service';
+
+import { Cliente } from '../models/cliente.model';
+import { FlashMessagesService } from 'angular2-flash-messages';
+import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-cliente',
+  selector: 'app-clientes',
   templateUrl: './cliente.component.html',
   styleUrls: ['./cliente.component.css']
 })
-export class ClienteComponent implements OnInit {
+export class ClientesComponent implements OnInit {
 
-  constructor() { }
+  clientes: Cliente[];
+  cliente: Cliente ={
+    nombre: '',
+    apellido: '',
+    email: '',
+    saldo: 0
+  }
+  
+  @ViewChild("clienteForm") clienteForm: NgForm;
 
-  ngOnInit(): void {
+  @ViewChild("botonCerrar") botonCerrar: ElementRef;
+
+  constructor(private clientesServicio: ClienteServicio,
+              private flashMessages: FlashMessagesService  
+    ) { }
+
+  ngOnInit() {
+    this.clientesServicio.getClientes().subscribe(
+      extraerClientesdeBD => {
+        this.clientes = extraerClientesdeBD;
+      }
+    )
+  }
+
+  getSaldoTotal(){
+    let saldoTotal: number = 0;
+    if(this.clientes){
+      this.clientes.forEach( cliente =>{
+        saldoTotal += cliente.saldo;
+      })
+    }
+    return saldoTotal;
+  }
+
+  agregar({value, valid}: {value: Cliente, valid: boolean}){
+    if(!valid){
+      this.flashMessages.show('Por favor llena el formulario correctamente', {
+        cssClass: 'alert-danger',timeout: 4000
+      });
+    }
+    else{
+      //Agregar el nuevo cliente
+      this.clientesServicio.agregarCliente(value);
+      this.clienteForm.resetForm();
+      this.cerrarModal();
+    }
+  }
+
+  private cerrarModal(){
+    this.botonCerrar.nativeElement.click();
   }
 
 }
